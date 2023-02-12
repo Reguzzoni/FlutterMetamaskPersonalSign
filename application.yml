@@ -1,0 +1,8 @@
+--- # Application configuration - application.yaml
+author: RaccoonFantasy
+description: Example websocket with proto.
+url:
+  host: 192.168.1.8
+  port_http: 7070
+  port_ws: 6678
+

@@ -1,0 +1,283 @@
+syntax = "proto3";
+
+package proto;
+option go_package = "/grpc_server";
+
+// Routes message
+
+message ServicesRequest {
+  oneof topic {
+    Authenticate authenticate = 1;
+    Request matchRequest = 2;
+    HomeRequest homeRequest = 3;
+    Route route = 4;
+  }
+}
+
+message ServicesResponse {
+  oneof topic {
+    Authenticated authenticated = 1;
+    Response matchResponse = 2;
+    InfoResponse homeResponse = 3;
+  }
+}
+
+message Route {
+  string route = 1;
+}
+
+// Authentication
+
+message Authenticate {
+  string token = 1;
+}
+
+message Authenticated {
+  bool authenticated = 1;
+  bool inGame = 2;
+}
+
+// Info Messages
+
+message HomeRequest {
+  oneof action {
+    Route route = 1;
+  }
+}
+
+message InfoResponse {
+  oneof action {
+    ClientsConnected clientsConnected = 1;
+    ClientsInGame clientsInGame = 2;
+    ClientsSearching clientsSearching = 3;
+    MatchesOnline matchesOnline = 4;
+    ErrorResponse errorResponse = 5;
+  }
+}
+
+message ClientsConnected {
+  int32 clients = 1;
+}
+
+message ClientsSearching {
+  int32 clients = 1;
+}
+
+message ClientsInGame {
+  int32 clients = 1;
+}
+
+message MatchesOnline {
+  int32 matecNum = 1;
+  repeated MatchSetup matchList = 2;
+}
+
+// Match Messages
+
+message PlayRequest {
+  int32 deckId = 1;
+  int32 mode = 2;
+}
+
+message MatchSetup {
+  string roomId = 1;
+  string playerId = 2;
+  int32 boardSize = 3;
+  repeated Player players = 4;
+  repeated int32 draw = 5;
+}
+
+message CreatePrivateMatch {
+  string roomName = 1;
+  string roomPassword = 2;
+  int32 roundNumber = 3;
+  int32 deckId = 4;
+}
+
+message JoinPrivateMatch {
+  string roomId = 1;
+  string roomPassword = 2;
+  int32 deckId = 3;
+}
+
+message RemovePrivateMatch {
+  string roomId = 1;
+}
+
+message Request {
+  oneof action {
+    PlayRequest searchGame = 1;
+    StartGame startGame = 2;
+    AbortGame abortGame = 3;
+    Move move = 4;
+    Recover recover = 5;
+    AbortSearch abortSearch = 6;
+    SpectateMatch spectateMatch = 7;
+    AbortSpectate abortSpectate = 8;
+    CreatePrivateMatch createPrivateMatch = 9;
+    JoinPrivateMatch joinPrivateMatch = 10;
+    RemovePrivateMatch removePrivateMatch = 11;
+    string exitPrivateRoom = 12;
+    JoinBotMatch joinBotMatch = 13;
+  }
+}
+
+message JoinBotMatch {
+  string roomId = 1;
+}
+
+message AbortSpectate {
+  bool abort = 1;
+}
+
+message SpectateMatch {
+  string roomId = 1;
+}
+
+message AbortSearch {
+  bool abort = 1;
+}
+
+message AbortedSearch {
+  bool aborted = 1;
+}
+
+
+message Response {
+  oneof action {
+    MatchSetup matchSetup = 1;
+    GameUpdate gameUpdate = 2;
+    RoundOver roundOver = 3;
+    RoundStart roundStart = 4;
+    RecoverResponse recoverResponse = 5;
+    ErrorResponse errorResponse = 6;
+    AbortedSearch abortedSearch = 7;
+    CreatedPrivateMatch createdPrivateMatch = 8;
+    RemovedPrivateMatch removedPrivateMatch = 9;
+    JoinedPlayer joinedPlayer = 10;
+    bool exitedPrivateRoom = 11;
+  }
+}
+
+message CreatedPrivateMatch {
+  string roomId = 1;
+}
+
+message RemovedPrivateMatch {
+  string roomId = 1;
+}
+
+message GameUpdate {
+  AddCard addcard = 1;
+  UpdateCard updateCard = 2;
+  repeated int32 drawnCard = 3;
+  int64 turnStartsAt = 4;
+}
+
+message StartGame {
+  string roomId = 1;
+}
+
+message AbortGame {
+  string roomId = 1;
+  bool match = 2;
+}
+
+message Move {
+  Card card = 1;
+}
+
+message ErrorResponse {
+  oneof err {
+    StartError startError = 1;
+    GameError gameError = 2;
+    MoveError moveError = 3;
+    ServerError serverError = 4;
+  }
+}
+
+message Card {
+  int32 CardId = 1;
+  int32 CooX = 2;
+  int32 CooY = 3;
+  string ownerId = 4;
+  string base64 = 5;
+  CardPowers powers = 6;
+}
+
+message CardPowers {
+  int32 up = 1;
+  int32 down = 2;
+  int32 left = 3;
+  int32 right = 4;
+}
+
+message Recover {
+  string roomId = 1;
+}
+
+message AddCard {
+  Card card = 1;
+}
+
+message RecoverResponse {
+  repeated Card card = 1;
+  bool matchOver = 2;
+  bool isStarted = 3;
+  bool isRoundStarted = 4;
+  repeated string roundsWinner = 5;
+  string PlayerTurn = 6;
+  int64 turnStartsAt = 7;
+  repeated int32 drawnCard = 8;
+  string roomId = 9;
+  repeated Player players = 10;
+  int32 winnerRoundId = 11;
+  int32 winnerMatchId = 12;
+}
+
+message UpdateCard {
+  repeated Card card = 1;
+}
+
+message RoundOver {
+  string roundWinner = 1;
+  bool matchOver = 2;
+  bool surrender = 3;
+  ErrorResponse error = 4;
+}
+
+message RoundStart {
+  bool ready = 1;
+  int64 newRoundAt = 2;
+  ErrorResponse error = 3;
+}
+
+message Player {
+  string playerName = 1;
+  string playerId = 2;
+  string playerImgProfileBase64 = 3;
+}
+
+message StartError {
+  string e = 1;
+}
+
+message GameError {
+  string e = 1;
+}
+
+message MoveError {
+  string e = 1;
+}
+
+message ServerError {
+  string e = 1;
+}
+
+message JoinedPlayer {
+  string playerId = 1;
+  string playerName = 2;
+  string playerImgProfileBase64 = 3;
+  repeated string playerJoined = 4;
+  string roomId = 5;
+}

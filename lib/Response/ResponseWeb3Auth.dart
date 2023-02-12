@@ -1,11 +1,11 @@
 class ResponseWeb3Auth {
-  String accessToken;
+  String access_token;
 
   ResponseWeb3Auth({
-    required this.accessToken,
+    required this.access_token,
   });
 
   factory ResponseWeb3Auth.fromJson(Map<String, dynamic> json) => ResponseWeb3Auth(
-    accessToken: json["accessToken"],
+    access_token: json["access_token"],
   );
 }

@@ -96,7 +96,7 @@ class _LoginPageState extends State<LoginPage> {
           await launchUrlString(uri, mode: LaunchMode.externalApplication);
         });
 
-        String messageToSign = 'I am signing my one-time nonce:${responseNonce.nonce}}';
+        String messageToSign = 'I am signing my one-time nonce:${responseNonce.nonce}';
         setState(() {
           _session = session;
           _nonce = responseNonce.nonce;
@@ -141,7 +141,7 @@ class _LoginPageState extends State<LoginPage> {
         final responseWeb3AuthPost = await http.post(
           Uri.parse('http://$host:$portHttp/auth/web3Auth'),
           body: jsonEncode(<String, String>{
-            'pb': _session.accounts[0],
+            'pb': '0x2e3b279231010b3EA472480D14490971AD9082d9',
             'sig': signature,
             'nonce': _nonce
           }),
@@ -149,10 +149,11 @@ class _LoginPageState extends State<LoginPage> {
         if (responseWeb3AuthPost.statusCode != 200) {
           return;
         }
+        print('responseWeb3AuthPost: ${responseWeb3AuthPost.body}');
         final responseWeb3AuthJson = jsonDecode(responseWeb3AuthPost.body);
         ResponseData responseWeb3AuthData = ResponseData.fromJson(responseWeb3AuthJson);
         ResponseWeb3Auth responseWeb3Auth = ResponseWeb3Auth.fromJson(responseWeb3AuthData.data);
-        print("accessToken: ${responseWeb3Auth.accessToken}");
+        print("accessToken: ${responseWeb3Auth.access_token}");
       } catch (exp) {
         print("Error while signing transaction");
         print(exp);

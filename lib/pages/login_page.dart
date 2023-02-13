@@ -46,10 +46,10 @@ class _LoginPageState extends State<LoginPage> {
   loginUsingMetamask(BuildContext context) async {
     if (!connector.connected) {
       try {
-        var session = await connector.createSession(onDisplayUri: (uri) async {
+        var session = await connector.createSession(chainId: 80001, onDisplayUri: (uri) async {
           _uri = uri;
           print('URI: $uri');
-          await launchUrlString(uri, mode: LaunchMode.externalApplication);
+          await launchUrlString('metamask://wc?uri=${Uri.encodeFull(uri)}', mode: LaunchMode.externalApplication);
         });
         print(session.accounts[0]);
         print(session.chainId);
